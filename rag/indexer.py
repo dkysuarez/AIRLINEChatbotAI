@@ -96,7 +96,7 @@ class IntelligentIndexer:
     def __init__(self, data_dir: Optional[Path] = None):
         """Initializes the intelligent indexer."""
         self.project_root = Path(__file__).parent.parent
-        self.data_dir = data_dir or (self.project_root / "rag" / "data" / "raw")
+        self.data_dir = data_dir or (self.project_root / "data" / "raw")
         self.chroma_dir = self.project_root / "rag" / "chroma_db"
 
         logger.info(f"Data directory: {self.data_dir}")
