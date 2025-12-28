@@ -1,0 +1,48 @@
+{
+  "timestamp": "2025-12-28T15:53:43.521619",
+  "data_directory": "C:\\Users\\kterz\\Downloads\\airline-chatbot\\data\\raw",
+  "chroma_directory": "C:\\Users\\kterz\\Downloads\\airline-chatbot\\rag\\chroma_db",
+  "stats": {
+    "total_files_checked": 4,
+    "useful_files_found": 4,
+    "useless_files_skipped": 0,
+    "total_chunks_created": 70,
+    "chunks_by_type": {
+      "general": 34,
+      "faq": 36
+    },
+    "indexing_time": "0:00:34.951704"
+  },
+  "useful_files_indexed": [
+    "checked_baggage.txt",
+    "faq_baggage.txt",
+    "baggage_guidelines.txt",
+    "flight_status.txt"
+  ],
+  "chunking_strategy": {
+    "baggage_table": "Table-aware chunking (1000 chars)",
+    "faq": "Intelligent Q/A extraction",
+    "general": "Adaptive recursive chunking"
+  },
+  "content_priorities": {
+    "baggage_table": 2.0,
+    "faq": 1.5,
+    "general": 1.0,
+    "flight_status": 1.3
+  },
+  "metadata_fields": [
+    "filename",
+    "content_type",
+    "chunk_id",
+    "total_chunks",
+    "char_count",
+    "source",
+    "airline",
+    "has_baggage_info",
+    "countries_mentioned",
+    "question_count",
+    "is_question",
+    "content_priority",
+    "processed_at"
+  ]
+}
