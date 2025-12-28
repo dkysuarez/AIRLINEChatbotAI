@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "source_url": "https://www.airindia.com/in/en/manage/flight-status.html",
+    "scrape_date": "2025-12-28T15:17:10.128640",
+    "filename": "flight_status.txt",
+    "domain": "airindia.com",
+    "content_type": "airline_policy"
+  },
+  "content": {
+    "text": "Stay ahead of last-minute changes. Get instant updates on your flight's departure and arrival status by providing your flight number, booking reference number or route details\nFlight Number\nFlight Number*\nGIFT CARDS\nBOOK & MANAGE\nWHERE WE FLY\nPREPARE TO TRAVEL\nAIR INDIA EXPERIENCE\nMAHARAJA CLUB\nCorporate Information\nFlight Schedule\nNon-stop Flights\nPopular Flights\nPartner Airlines\nBaggage Guidelines\nAirport Information\nFirst-time Travellers and Children\nVisas, Documents and Travel Tips\nHealth and Medical Assistance\nTravelling with Pets\nAt The Airport\nIn The Air\nTransforming Experiences\nPoints Calculator\nEarn Points\nRedeem Points\nFrequently Asked Questions\nGrievance Resolution\nEU/UK Flight Delay Claim\nAIR INDIA APP\nDownload the app to book and manage your flights on the go. Learn more\nTerms & Conditions\nPrivacy Notice\nCookie Settings\nConditions of Carriage\nDomestic Fares\nTravel Agents\nPassenger Rights\nDisruption Statement\nAll rights reserved. Use of this website indicates your compliance with our Privacy Notice, Conditions of Carriage, Terms and Conditions.\n\n",
+    "length_chars": 1074,
+    "length_words": 154,
+    "tables_present": false
+  },
+  "processing_info": {
+    "cleaned": true,
+    "format": "text_with_tables"
+  }
+}
