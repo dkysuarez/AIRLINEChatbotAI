@@ -114,12 +114,7 @@ The suite evaluates:
 - More comprehensive benchmark suite (including BLEU/ROUGE scores)
 
 ## Deployment
-The app is designed for easy deployment on:
-- Vercel (recommended - free tier)
-- Render
-- Railway
-
-Live demo URL: (https://airline-chatbotai.streamlit.app)
+URL: (https://airline-chatbotai.streamlit.app)
 
 ---
 
