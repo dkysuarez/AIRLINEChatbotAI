@@ -2,6 +2,7 @@
 Sidebar Components for Air India Chatbot
 =========================================
 Sidebar with system controls, debug panel, and utilities.
+Now includes Context Manager controls.
 """
 
 import streamlit as st
@@ -44,6 +45,22 @@ class SidebarManager:
             from .components import display_system_status
             display_system_status(components)
 
+            # Display context status if available
+            if "conversation_context" in components and components["conversation_context"]:
+                ctx = components["conversation_context"]
+                summary = ctx.get_conversation_summary()
+
+                st.markdown("---")
+                st.markdown("**🧠 Context Status:**")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.success(f"Messages: {summary['message_count']}")
+                with col2:
+                    if summary['flight_results_count'] > 0:
+                        st.success(f"Flights: {summary['flight_results_count']}")
+                    else:
+                        st.info(f"Flights: {summary['flight_results_count']}")
+
             # Display additional stats if available
             if "chatbot_engine" in components and components["chatbot_engine"]:
                 try:
@@ -70,6 +87,7 @@ class SidebarManager:
             # Display message count
             message_count = len(st.session_state.get("messages", []))
             st.info(f"**Messages in chat:** {message_count}")
+
     def display_debug_panel(self, expanded: bool = True):
         """
         Display debug console panel
@@ -87,13 +105,13 @@ class SidebarManager:
             from .components import display_debug_logs
             display_debug_logs(debug_logs, max_lines=15)
 
-            # Clear logs button
-            if st.button("🗑️ Clear Logs", key="clear_logs_btn", use_container_width=True):
+            # Clear logs button - CON CLAVE ÚNICA
+            if st.button("🗑️ Clear Logs", key="sidebar_clear_logs_btn", use_container_width=True):
                 st.session_state[self.debug_logs_key] = []
                 st.rerun()
 
-            # Log test button
-            if st.button("📝 Add Test Log", key="test_log_btn", use_container_width=True):
+            # Log test button - CON CLAVE ÚNICA
+            if st.button("📝 Add Test Log", key="sidebar_test_log_btn", use_container_width=True):
                 test_log = f"[{datetime.now().strftime('%H:%M:%S')}] [TEST] Test debug log entry"
                 if self.debug_logs_key not in st.session_state:
                     st.session_state[self.debug_logs_key] = []
@@ -114,28 +132,49 @@ class SidebarManager:
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("Test Flight", key="test_flight_btn", use_container_width=True):
+            if st.button("Test Flight", key="sidebar_test_flight_btn", use_container_width=True):
                 st.session_state.pending_question = "DEL to BOM flights"
                 st.rerun()
 
         with col2:
-            if st.button("Test RAG", key="test_rag_btn", use_container_width=True):
+            if st.button("Test RAG", key="sidebar_test_rag_btn", use_container_width=True):
                 st.session_state.pending_question = "Baggage allowance for USA flights"
                 st.rerun()
 
-        # Modular system tests
-        st.markdown("### 🔄 Modular Tests")
+        # Context-aware tests
+        st.markdown("### 🔄 Context Tests")
 
         col3, col4 = st.columns(2)
 
         with col3:
-            if st.button("Test Engine", key="test_engine_btn", use_container_width=True):
-                st.session_state.pending_question = "Flights from Delhi to Mumbai"
+            if st.button("Test Context Ref", key="sidebar_test_context_ref_btn", use_container_width=True):
+                # First make sure we have a flight search
+                if "conversation_context" in st.session_state:
+                    ctx = st.session_state.conversation_context
+                    if ctx.last_flight_results:
+                        st.session_state.pending_question = "What about the first flight?"
+                    else:
+                        # No flights yet, do a search first
+                        st.session_state.pending_question = "DEL to BOM flights"
+                        st.info("First doing a flight search...")
+                else:
+                    st.session_state.pending_question = "DEL to BOM flights"
                 st.rerun()
 
         with col4:
-            if st.button("Test Builder", key="test_builder_btn", use_container_width=True):
-                st.session_state.pending_question = "What is baggage policy?"
+            if st.button("Test Multi-turn", key="sidebar_test_multiturn_btn", use_container_width=True):
+                # Clear context first
+                if "conversation_context" in st.session_state:
+                    st.session_state.conversation_context.clear()
+
+                # Queue multiple questions
+                if "pending_questions" not in st.session_state:
+                    st.session_state.pending_questions = [
+                        "DEL to BOM flights tomorrow",
+                        "What about the 9:30 flight?",
+                        "Show me details"
+                    ]
+                    st.session_state.pending_question = st.session_state.pending_questions.pop(0)
                 st.rerun()
 
     def display_chat_controls(self, chat_interface):
@@ -148,9 +187,17 @@ class SidebarManager:
         st.divider()
         st.markdown("### 💬 Chat Controls")
 
-        # Clear chat button
-        if st.button("🆕 New Chat", key="new_chat_btn", use_container_width=True):
+        # Clear chat button - CON CLAVE ÚNICA
+        if st.button("🆕 New Chat", key="sidebar_new_chat_btn", use_container_width=True):
             chat_interface.clear_chat_history()
+
+            # Also clear context
+            if "conversation_context" in st.session_state:
+                st.session_state.conversation_context.clear()
+                st.success("Chat and context cleared!")
+            else:
+                st.success("Chat cleared!")
+
             st.rerun()
 
         # Export conversation
@@ -229,6 +276,18 @@ class SidebarManager:
                 with col2:
                     st.metric("Errors/Warnings", f"{error_count}/{warning_count}")
 
+            # Context metrics
+            if "conversation_context" in st.session_state:
+                ctx = st.session_state.conversation_context
+                summary = ctx.get_conversation_summary()
+
+                st.markdown("**🧠 Context Metrics:**")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.metric("Context Msgs", summary['message_count'])
+                with col2:
+                    st.metric("Cached Flights", summary['flight_results_count'])
+
     def display_quick_actions(self):
         """Display quick action buttons"""
         st.divider()
@@ -237,7 +296,7 @@ class SidebarManager:
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("📋 Copy Last Response", key="copy_btn", use_container_width=True):
+            if st.button("📋 Copy Last Response", key="sidebar_copy_btn", use_container_width=True):
                 if "messages" in st.session_state and st.session_state.messages:
                     last_response = None
                     for msg in reversed(st.session_state.messages):
@@ -246,14 +305,14 @@ class SidebarManager:
                             break
 
                     if last_response:
-                        st.write("Response copied to clipboard")
-                        # Note: Streamlit doesn't have direct clipboard access
-                        # This would require JavaScript integration
+                        # Try to copy to clipboard (browser dependent)
+                        st.write("📋 Response ready to copy (Ctrl+C)")
+                        st.code(last_response[:200] + "..." if len(last_response) > 200 else last_response)
                     else:
                         st.warning("No assistant response found")
 
         with col2:
-            if st.button("🔄 Restart Session", key="restart_btn", use_container_width=True):
+            if st.button("🔄 Restart Session", key="sidebar_restart_btn", use_container_width=True):
                 # Clear session state except essential items
                 keys_to_keep = ["app_started", "debug_logs"]
                 keys_to_delete = [key for key in st.session_state.keys()
@@ -262,7 +321,36 @@ class SidebarManager:
                 for key in keys_to_delete:
                     del st.session_state[key]
 
+                st.success("Session restarted!")
                 st.rerun()
+
+        # Context-specific actions
+        col3, col4 = st.columns(2)
+
+        with col3:
+            if st.button("🧹 Clear Context", key="sidebar_clear_context_btn", use_container_width=True):
+                if "conversation_context" in st.session_state:
+                    st.session_state.conversation_context.clear()
+                    st.success("Context cleared!")
+                    st.rerun()
+                else:
+                    st.warning("No context to clear")
+
+        with col4:
+            if st.button("📊 Show Context", key="sidebar_show_context_btn", use_container_width=True):
+                if "conversation_context" in st.session_state:
+                    ctx = st.session_state.conversation_context
+                    summary = ctx.get_conversation_summary()
+
+                    st.info("**Context Summary:**")
+                    st.json(summary)
+
+                    if ctx.last_flight_results:
+                        st.write("**Cached Flights:**")
+                        for i, flight in enumerate(ctx.last_flight_results[:3]):
+                            st.caption(f"{i+1}. {flight.get('flight_number')} - {flight.get('departure_time')}")
+                else:
+                    st.warning("No context available")
 
     def render_full_sidebar(self,
                             components: Dict[str, Any],
@@ -296,12 +384,14 @@ class SidebarManager:
         st.divider()
         self.display_debug_panel(expanded=expanded_sections.get("debug", True))
 
-        self.display_system_tests_panel(chat_interface)
+        if expanded_sections.get("tests", False):
+            self.display_system_tests_panel(chat_interface)
 
         if expanded_sections.get("metrics", False):
             self.display_performance_metrics(components.get("chatbot_engine"))
 
-        self.display_chat_controls(chat_interface)
+        if expanded_sections.get("controls", False):
+            self.display_chat_controls(chat_interface)
 
         if expanded_sections.get("actions", False):
             self.display_quick_actions()
@@ -335,7 +425,8 @@ if __name__ == "__main__":
         "response_builder": None,
         "intent_detector": None,
         "flight_db": None,
-        "rag_handler": None
+        "rag_handler": None,
+        "conversation_context": None
     }
 
     # Initialize debug logs
@@ -348,12 +439,10 @@ if __name__ == "__main__":
             "[14:30:29.345] [TIMER] Processing time: 1.234s"
         ]
 
-
     # Initialize chat interface mock
     class MockChatInterface:
         def clear_chat_history(self):
             pass
-
 
     # Create sidebar manager
     sidebar = create_sidebar_manager()
