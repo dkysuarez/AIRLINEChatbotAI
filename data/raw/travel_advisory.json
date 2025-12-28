@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "source_url": "https://www.airindia.com/in/en/travel-advisory.html",
+    "scrape_date": "2025-12-28T15:21:43.006963",
+    "filename": "travel_advisory.txt",
+    "domain": "airindia.com",
+    "content_type": "airline_policy"
+  },
+  "content": {
+    "text": "PAGE NOT FOUND\nWe're sorry, but the page you're looking for doesn't seem to exist. It might have been moved, deleted, or there could be a mistake in the URL you entered.\n\n",
+    "length_chars": 171,
+    "length_words": 32,
+    "tables_present": false
+  },
+  "processing_info": {
+    "cleaned": true,
+    "format": "text_with_tables"
+  }
+}
